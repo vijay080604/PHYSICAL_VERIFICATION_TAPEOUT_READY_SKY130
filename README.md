@@ -286,7 +286,7 @@ The following screenshots confirm that each tool is successfully configured and 
 </table>
 ---
 
-## End-to-End CMOS Inverter Verification Flow
+## CMOS Inverter Design & Verification Workflow
 
 This example demonstrates the complete physical verification workflow using a CMOS inverter. Starting from schematic design, the circuit is simulated, implemented as a physical layout, extracted into a SPICE netlist, and finally verified using LVS with Netgen.
 
@@ -419,3 +419,20 @@ netgen -batch lvs "../mag/inverter.spice inverter" "../xschem/inverter.spice inv
 <p align="right">
     <a href="#repository-navigation">Back to Navigation ↑</a>
 </p>
+---
+
+## Module 02 – DRC & LVS Fundamentals
+
+This module introduces the fundamental concepts of **Design Rule Checking (DRC)** and **Layout Versus Schematic (LVS)** using the **SKY130 Open PDK**. It demonstrates how layouts are imported, extracted, verified against foundry design rules, and compared with the original schematic to ensure design correctness.
+
+### DRC & LVS Verification Flow
+
+<p align="center">
+    <img src="images/module_02/drc_lvs_fundamentals_flow.png" alt="DRC and LVS Fundamentals Flow" width="100%">
+</p>
+
+<p align="center">
+    <em>Figure 1. Overview of the physical verification flow from schematic design to layout verification using DRC and LVS.</em>
+</p>
+
+---
