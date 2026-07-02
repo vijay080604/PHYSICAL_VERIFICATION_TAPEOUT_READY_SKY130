@@ -483,3 +483,177 @@ load sky130_fd_sc_hd__and2_1
 </p>
 
 > **Observation:** The SKY130 AND2 standard cell is successfully imported and loaded into Magic, making it ready for further physical verification operations such as metadata configuration, extraction, DRC, and LVS.
+> ---
+
+### Configuring Ports & Layout Metadata
+
+To enable accurate physical verification, the standard cell layout is configured with the required **port information** and **metadata**. This ensures proper mapping between the layout and the corresponding SPICE netlist during LVS verification.
+
+#### Commands Used
+
+```tcl
+port first
+port 1 name
+port 1 class
+port 1 use
+
+lef read /usr/share/pdk/sky130A/libs.ref/sky130_fd_sc_hd/lef/sky130_fd_sc_hd.lef
+
+readspice /usr/share/pdk/sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_fd_sc_hd.spice
+
+load sky130_fd_sc_hd__and2_1
+```
+<p align="center">
+    <img src="images/module_02/05_port_configuration.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 6. Configuring port information for the standard cell.</em>
+</p>
+
+<p align="center">
+    <img src="images/module_02/06_lef_import.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 7. Importing LEF data for the SKY130 standard-cell library.</em>
+</p>
+<p align="center">
+    <img src="images/module_02/read_spice_library_07.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure X. SPICE library loaded successfully, providing the netlist information required for LVS verification.</em>
+</p>
+---
+
+### Working with Standard Cell Instances
+
+Magic supports hierarchical layout design by allowing existing standard cells to be loaded, instantiated, and edited. This section demonstrates the difference between **`load`** and **`getcell`**, along with the process of making an imported cell writable for modification.
+
+#### Commands Used
+
+```tcl
+lef read /usr/share/pdk/sky130A/libs.ref/sky130_fd_sc_hd/lef/sky130_fd_sc_hd.lef
+
+load sky130_fd_sc_hd__and2_1
+
+readspice /usr/share/pdk/sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_fd_sc_hd.spice
+
+load test
+
+getcell sky130_fd_sc_hd__and2_1
+
+gds write test
+
+property
+
+cellname writeable sky130_fd_sc_hd__and2_1 true
+
+gds write test
+```
+
+> **Note**
+>
+> - **`load`** opens an existing layout cell for viewing or editing.
+> - **`getcell`** places an instance of an existing cell inside the current layout, enabling hierarchical design.
+
+<p align="center">
+    <img src="images/module_02/get_cell_08.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 6. Placing the <code>sky130_fd_sc_hd__and2_1</code> standard cell as an instance using <code>getcell</code>.</em>
+</p>
+
+<p align="center">
+    <img src="images/module_02/gds_write_09.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 7. Making the imported standard cell writable before exporting the updated layout.</em>
+</p>
+
+> **Observation:** The standard cell is successfully instantiated and marked as writable, allowing hierarchical layouts to be modified and saved for further physical verification.
+> ---
+
+### Layout Extraction
+
+Once the layout is completed, **Magic** extracts the electrical connectivity and generates a SPICE netlist from the physical layout. The extracted netlist serves as the input for subsequent LVS verification.
+
+#### Commands Used
+
+```tcl
+extract all
+
+ext2spice lvs
+
+ext2spice
+```
+
+<p align="center">
+    <img src="images/module_02/layout_extraction_10.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 8. Extracting the layout and generating an LVS-compatible SPICE netlist.</em>
+</p>
+
+<p align="center">
+    <img src="images/module_02/extracted_spice_netlist_11.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 9. SPICE netlist generated from the extracted layout.</em>
+</p>
+
+> **Observation:** The layout is successfully extracted into a SPICE netlist, providing the electrical representation required for LVS verification.
+> #### Advanced Extraction Options
+
+Magic also provides additional extraction commands for generating simulation files and including parasitic resistance and capacitance information.
+
+##### Commands Used
+
+```tcl
+ext2spice cthresh 0.01
+ext2spice
+
+ext2sim labels on
+ext2sim
+
+extresist tolerance 10
+extresist
+
+ext2spice lvs
+ext2spice cthresh 0.01
+ext2spice extresist on
+ext2spice
+```
+<p align="center">
+    <img src="images/module_02/spice_capacitance_extraction_12.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 10. Generating the extracted SPICE netlist with capacitance information.</em>
+</p>
+<p align="center">
+    <img src="images/module_02/extracted_spice_netlist_of_cthresh_13.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 9. SPICE netlist generated from the extracted layout.</em>
+</p>
+<p align="center">
+    <img src="images/module_02/spice_resistance_extraction_14.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 10. Generating the extracted SPICE netlist with resistance information.</em>
+</p>
+</p>
+<p align="center">
+    <img src="images/module_02/extraction_files_15.png" width="900">
+</p>
+<p align="center">
+    <em>Figure 11.files created after all extraction operations</em>
+</p>
