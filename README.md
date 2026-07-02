@@ -1,7 +1,7 @@
 # Physical Verification for Tapeout Readiness using SKY130
 
 <p align="center">
-  <img src="images/course_banner.png" alt="Physical Verification for Tapeout Readiness using SKY130" width="100%">
+    <img src="images/module_01/course_banner.png" alt="Physical Verification Workflow" width="900">
 </p>
 
 <p align="center">
