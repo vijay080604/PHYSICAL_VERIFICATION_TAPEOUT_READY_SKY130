@@ -179,7 +179,6 @@ With the required tools successfully installed, the physical verification enviro
 <p align="right">
     <a href="#repository-navigation">Back to Navigation ↑</a>
 </p>
----
 
 ### SKY130 PDK Integration
 
@@ -253,6 +252,170 @@ ln -s /usr/share/pdk/sky130A/libs.tech/netgen/sky130A_setup.tcl setup.tcl
 >   ```
 >
 > Verify the installation path before creating the symbolic links.
+<p align="right">
+    <a href="#repository-navigation">Back to Navigation ↑</a>
+</p>
+#### Integration Verification
+
+The following screenshots confirm that each tool is successfully configured and linked with the **SKY130 Open PDK** environment.
+
+<table align="center">
+<tr>
+<td align="center">
+<img src="images/module_01/xschem_working.png" width="420"><br>
+<em>Figure 3. Xschem successfully configured with SKY130 PDK.</em>
+</td>
+
+<td align="center">
+<img src="images/module_01/ngspice_working.png" width="420"><br>
+<em>Figure 4. ngspice successfully configured with SKY130 PDK.</em>
+</td>
+</tr>
+
+<tr>
+<td align="center">
+<img src="images/module_01/magic_working.png" width="420"><br>
+<em>Figure 5. Magic successfully loaded with the SKY130 technology file.</em>
+</td>
+
+<td align="center">
+<img src="images/module_01/netgen_working.png" width="420"><br>
+<em>Figure 6. Netgen successfully configured for LVS using SKY130.</em>
+</td>
+</tr>
+</table>
+---
+
+## End-to-End CMOS Inverter Verification Flow
+
+This example demonstrates the complete physical verification workflow using a CMOS inverter. Starting from schematic design, the circuit is simulated, implemented as a physical layout, extracted into a SPICE netlist, and finally verified using LVS with Netgen.
+
+---
+
+### Step 1 – CMOS Inverter Schematic
+
+The CMOS inverter schematic is created in **Xschem** using the SKY130 device library. After placing the PMOS and NMOS devices, the required device parameters are configured before generating the circuit symbol for simulation.
+
+<p align="center">
+    <img src="images/module_01/inverter_schematic.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 7. CMOS inverter schematic created in Xschem using the SKY130 device library.</em>
+</p>
+
+---
+
+### Step 2 – Circuit Simulation
+
+A dedicated testbench is created using the generated inverter symbol to verify the circuit operation in **ngspice**. The voltage transfer characteristics (VTC) confirm the expected switching behaviour of the CMOS inverter.
+
+<p align="center">
+    <img src="images/module_01/inverter_tb_schematic.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 8. Testbench schematic used for CMOS inverter simulation.</em>
+</p>
+
+<p align="center">
+    <img src="images/module_01/ngspice_with_vtc_charateristics.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 9. ngspice simulation showing the generated VTC characteristics.</em>
+</p>
+
+<p align="center">
+    <img src="images/module_01/cmos_inverter_vtc_output.png" width="700">
+</p>
+
+<p align="center">
+    <em>Figure 10. CMOS inverter Voltage Transfer Characteristic (VTC).</em>
+</p>
+
+> **Observation:** The simulation confirms the expected inverter switching behaviour before proceeding to physical layout implementation.
+
+---
+
+### Step 3 – Physical Layout Implementation
+
+The verified schematic is implemented as a physical layout in **Magic** using the SKY130 technology. Device placement and routing are completed before extracting the layout netlist.
+
+<p align="center">
+    <img src="images/module_01/layout1_cmos_inverter.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 11. CMOS inverter layout implemented using Magic.</em>
+</p>
+
+---
+
+### Step 4 – Layout Extraction
+
+After completing the layout, the extracted SPICE netlist is generated using the following Magic commands.
+
+```tcl
+extract do local
+extract all
+ext2spice lvs
+ext2spice
+```
+
+| Command | Purpose |
+|:--------|:--------|
+| `extract do local` | Enables local layout extraction. |
+| `extract all` | Extracts the complete layout. |
+| `ext2spice lvs` | Generates an LVS-compatible SPICE netlist. |
+| `ext2spice` | Generates the extracted SPICE netlist from the layout. |
+
+<p align="center">
+    <img src="images/module_01/extract_file_proof.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 12. Layout extraction completed successfully.</em>
+</p>
+
+<p align="center">
+    <img src="images/module_01/spice_extraction.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 13. Extracted SPICE netlist generated from the Magic layout.</em>
+</p>
+
+---
+
+### Step 5 – Layout Versus Schematic (LVS)
+
+The extracted layout netlist is compared with the original schematic netlist using **Netgen**.
+
+```bash
+netgen -batch lvs "../mag/inverter.spice inverter" "../xschem/inverter.spice inverter"
+```
+
+**Purpose:** Performs Layout Versus Schematic (LVS) verification by comparing the extracted layout netlist with the schematic netlist.
+
+<p align="center">
+    <img src="images/module_01/lvs_command_proof1.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 14. Executing LVS verification using Netgen.</em>
+</p>
+
+<p align="center">
+    <img src="images/module_01/lvs_result.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 15. LVS comparison result generated by Netgen.</em>
+</p>
+
+> **Observation:** The LVS comparison reports mismatches between the schematic and layout netlists. This example is included to demonstrate the complete verification workflow and LVS execution process rather than achieving a fully matched LVS result.
+
 <p align="right">
     <a href="#repository-navigation">Back to Navigation ↑</a>
 </p>
