@@ -46,14 +46,17 @@ The following open-source tools and technologies were used throughout this works
 | **[OpenLANE RTL-to-GDSII Flow Overview](#openlane-rtl-to-gdsii-flow-overview)** | RTL-to-GDSII physical design flow overview |
 ---
 
+---
 
 ## Module 01 – Environment Setup & Physical Verification Flow
 
-This module covers the installation of the open-source EDA tools required for physical verification using the **SKY130 Open PDK**. These tools are used throughout the workshop for layout design, simulation, extraction, DRC, and LVS verification.
+This module covers the installation of the open-source EDA tools required for physical verification using the **SKY130 Open PDK**. These tools are used throughout the workshop for layout design, circuit simulation, layout extraction, DRC, and LVS verification.
+
+---
 
 ### Magic
 
-**Magic** is an open-source VLSI layout editor used for layout creation, editing, extraction, and Design Rule Checking (DRC).
+**Magic** is an open-source VLSI layout editor used for layout design, extraction, and Design Rule Checking (DRC).
 
 **Installation**
 
@@ -65,21 +68,13 @@ make
 sudo make install
 ```
 
-| Command | Purpose |
-|:--------|:--------|
-| `git clone` | Downloads the Magic source code. |
-| `cd magic` | Moves into the Magic source directory. |
-| `./configure` | Configures the build environment. |
-| `make` | Compiles the source code. |
-| `sudo make install` | Installs Magic on the system. |
-
-**Official Documentation:** http://opencircuitdesign.com/magic/index.html
+**Reference:** [Magic Documentation](http://opencircuitdesign.com/magic/index.html)
 
 ---
 
 ### Netgen
 
-**Netgen** is an open-source Layout Versus Schematic (LVS) tool used to compare extracted layout netlists with schematic netlists.
+**Netgen** is an open-source Layout Versus Schematic (LVS) tool used to compare schematic and extracted layout netlists.
 
 **Installation**
 
@@ -91,21 +86,13 @@ make
 sudo make install
 ```
 
-| Command | Purpose |
-|:--------|:--------|
-| `git clone` | Downloads the Netgen source code. |
-| `cd netgen` | Opens the Netgen directory. |
-| `./configure` | Configures the build environment. |
-| `make` | Compiles Netgen. |
-| `sudo make install` | Installs Netgen. |
-
-**Official Documentation:** http://opencircuitdesign.com/netgen/index.html
+**Reference:** [Netgen Documentation](http://opencircuitdesign.com/netgen/index.html)
 
 ---
 
 ### Xschem
 
-**Xschem** is an open-source schematic capture tool used for creating circuit schematics before layout implementation.
+**Xschem** is an open-source schematic capture tool used to create transistor-level circuit schematics.
 
 **Installation**
 
@@ -117,21 +104,13 @@ make
 sudo make install
 ```
 
-| Command | Purpose |
-|:--------|:--------|
-| `git clone` | Downloads the Xschem repository. |
-| `cd xschem_git` | Opens the Xschem directory. |
-| `./configure` | Prepares the build configuration. |
-| `make` | Compiles Xschem. |
-| `sudo make install` | Installs Xschem. |
-
-**Official Documentation:** http://repo.hu/projects/xschem/index.html
+**Reference:** [Xschem Documentation](http://repo.hu/projects/xschem/index.html)
 
 ---
 
 ### ngspice
 
-**ngspice** is an open-source circuit simulator used for analog and mixed-signal circuit simulation.
+**ngspice** is an open-source SPICE simulator used for analog and mixed-signal circuit simulation.
 
 **Installation**
 
@@ -145,28 +124,20 @@ make
 sudo make install
 ```
 
-| Command | Purpose |
-|:--------|:--------|
-| `tar -zxvf` | Extracts the downloaded package. |
-| `mkdir release` | Creates a separate build directory. |
-| `../configure` | Configures the build options. |
-| `make` | Compiles ngspice. |
-| `sudo make install` | Installs ngspice. |
-
-To display simulation waveforms, install **xterm**:
+To display simulation waveforms:
 
 ```bash
 sudo apt-get update
 sudo apt-get install xterm
 ```
 
-**Official Documentation:** https://ngspice.sourceforge.io/index.html
+**Reference:** [ngspice Documentation](https://ngspice.sourceforge.io/index.html)
 
 ---
 
 ### Open_PDKs
 
-**Open_PDKs** provides the complete **SKY130 Open PDK** environment required by open-source EDA tools such as Magic, Netgen, KLayout, and OpenLANE.
+**Open_PDKs** configures the complete **SKY130 Open PDK** environment required by tools such as Magic, Netgen, KLayout, and OpenLANE.
 
 **Installation**
 
@@ -178,20 +149,28 @@ make
 sudo make install
 ```
 
-| Command | Purpose |
-|:--------|:--------|
-| `git clone` | Downloads the Open_PDKs repository. |
-| `cd open_pdks` | Opens the project directory. |
-| `./configure --enable-sky130-pdk` | Enables the SKY130 PDK during configuration. |
-| `make` | Builds the PDK. |
-| `sudo make install` | Installs the SKY130 PDK. |
-
-**Official Repository:** https://github.com/RTimothyEdwards/open_pdks
+**Reference:** [Open_PDKs GitHub Repository](https://github.com/RTimothyEdwards/open_pdks)
 
 ---
 
-With the required tools successfully installed, the physical verification environment is ready. The next step is to understand the complete physical verification design flow before moving on to the laboratory exercises.
+### Common Installation Commands
+
+The following commands are frequently used while building open-source EDA tools from source.
+
+| Command | Description |
+|:--------|:------------|
+| `git clone` | Downloads the project source code from its repository. |
+| `cd <directory>` | Navigates to the project directory. |
+| `./configure` | Configures the build environment and checks required dependencies. |
+| `make` | Compiles the source code into executable binaries. |
+| `sudo make install` | Installs the compiled application on the system. |
+| `tar -zxvf` | Extracts compressed source packages. |
+| `mkdir` | Creates a new directory (commonly used for out-of-source builds). |
+
+---
+
+With the required tools successfully installed, the physical verification environment is ready. The next step is to understand the complete physical verification design flow before moving on to DRC and LVS verification.
 
 <p align="right">
-  <a href="#repository-navigation">Back to Navigation ↑</a>
+    <a href="#repository-navigation">Back to Navigation ↑</a>
 </p>
