@@ -436,3 +436,50 @@ This module introduces the fundamental concepts of **Design Rule Checking (DRC)*
 </p>
 
 ---
+### Reading Standard Cell Layouts
+
+Before loading the standard-cell GDS, copy the **SKY130 Magic technology file** into the working directory to ensure the layout is opened with the correct SKY130 process configuration.
+
+#### Commands Used
+
+```tcl
+cp /usr/share/pdk/sky130A/libs.tech/magic/sky130A.magicrc ./.magicrc
+
+gds read /usr/share/pdk/sky130A/libs.ref/sky130_fd_sc_hd/gds/sky130_fd_sc_hd.gds
+
+load sky130_fd_sc_hd__and2_1
+```
+
+<p align="center">
+    <img src="images/module_02/gds_read_01.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 2. Copying the SKY130 Magic technology file and importing the standard-cell GDS library.</em>
+</p>
+
+<p align="center">
+    <img src="images/module_02/reading_gds_cell_02.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 3. Reading the SKY130 standard-cell GDS database into Magic.</em>
+</p>
+
+<p align="center">
+    <img src="images/module_02/selection_and_2_cell_03.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 4. Selecting and loading the <code>sky130_fd_sc_hd__and2_1</code> standard cell.</em>
+</p>
+
+<p align="center">
+    <img src="images/module_02/and_2_1_cell_layout_view_04.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 5. Layout view of the <code>sky130_fd_sc_hd__and2_1</code> standard cell in Magic.</em>
+</p>
+
+> **Observation:** The SKY130 AND2 standard cell is successfully imported and loaded into Magic, making it ready for further physical verification operations such as metadata configuration, extraction, DRC, and LVS.
