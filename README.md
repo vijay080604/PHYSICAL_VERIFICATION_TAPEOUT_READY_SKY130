@@ -179,3 +179,80 @@ With the required tools successfully installed, the physical verification enviro
 <p align="right">
     <a href="#repository-navigation">Back to Navigation ↑</a>
 </p>
+---
+
+### SKY130 PDK Integration
+
+Before starting the laboratory exercises, verify that the **SKY130 Open PDK** is installed correctly and configure the required technology files for **Xschem**, **Magic**, and **Netgen**.
+
+#### 1. Verify SKY130 PDK Installation
+
+Use the following commands to confirm that the SKY130 PDK is available on your system.
+
+```bash
+ls /usr/share/pdk
+ls /usr/share/pdk/sky130A
+```
+
+**Purpose:** Verifies that the SKY130 Open PDK is installed and accessible before configuring the design environment.
+
+---
+
+#### 2. Create the Project Workspace
+
+Create a working directory and organize separate folders for each tool.
+
+```bash
+mkdir inverter
+cd inverter
+
+mkdir mag
+mkdir netgen
+mkdir xschem
+```
+
+**Purpose:** Creates a structured workspace for Magic, Netgen, and Xschem configuration files.
+
+---
+
+#### 3. Configure the SKY130 PDK
+
+Link the required SKY130 technology files to each tool using symbolic links.
+
+```bash
+cd xschem
+
+ln -s /usr/share/pdk/sky130A/libs.tech/xschem/xschemrc
+ln -s /usr/share/pdk/sky130A/libs.tech/ngspice/spinit .spiceinit
+
+cd ../mag
+
+ln -s /usr/share/pdk/sky130A/libs.tech/magic/sky130A.magicrc .magicrc
+
+cd ../netgen
+
+ln -s /usr/share/pdk/sky130A/libs.tech/netgen/sky130A_setup.tcl setup.tcl
+```
+
+**Purpose:** Links the required SKY130 configuration files, enabling the EDA tools to use the correct technology libraries during layout, simulation, and LVS.
+
+---
+
+> **Note**
+>
+> The SKY130 PDK installation path may vary depending on your environment.
+>
+> - **VSD Cloud Workspace (used in this workshop):**
+>   ```
+>   /usr/share/pdk/sky130A/
+>   ```
+>
+> - **Some Linux installations:**
+>   ```
+>   /usr/local/share/pdk/sky130A/
+>   ```
+>
+> Verify the installation path before creating the symbolic links.
+<p align="right">
+    <a href="#repository-navigation">Back to Navigation ↑</a>
+</p>
