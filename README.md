@@ -657,3 +657,139 @@ ext2spice
 <p align="center">
     <em>Figure 11.files created after all extraction operations</em>
 </p>
+
+---
+
+### Design Rule Check (DRC)
+
+Design Rule Check (DRC) verifies that the layout complies with the manufacturing rules defined by the **SKY130 Open PDK**. It identifies spacing, width, enclosure, and connectivity violations that could affect fabrication.
+
+#### Commands Used
+
+```bash
+/usr/share/pdk/sky130A/libs.tech/magic/run_standard_drc.py \
+/usr/share/pdk \
+sky130A/libs.ref/sky130_fd_sc_hd/mag/sky130_fd_sc_hd__and2_1.mag
+```
+
+```tcl
+drc listall why
+
+drc style drc(full)
+
+drc check
+
+drc why
+
+drc find
+
+getcell sky130_fd_sc_hd__tapvpwrvgnd_1
+```
+
+<p align="center">
+    <img src="images/module_02/drc_execution_17.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 14. Running Design Rule Check (DRC) on the SKY130 standard cell.</em>
+</p>
+
+<p align="center">
+    <img src="images/module_02/drc_violation_16.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 15. Viewing DRC results and locating rule violations in Magic.</em>
+</p>
+
+> **Observation:** The DRC engine successfully checks the layout against the SKY130 design rules and reports any rule violations that require correction before fabrication.
+> After confirming that the layout satisfies the required design rules, the next step is to verify its electrical equivalence with the schematic using **Layout Versus Schematic (LVS)**.
+> ---
+
+### Layout Versus Schematic (LVS)
+
+After the layout successfully passes DRC, the next step is to verify its electrical equivalence with the original schematic. **Netgen** compares the extracted layout netlist against the reference SPICE netlist and reports whether both designs match.
+
+#### Commands Used
+
+```bash
+netgen -batch lvs \
+"../mag/sky130_fd_sc_hd__and2_1.spice sky130_fd_sc_hd__and2_1" \
+"/usr/share/pdk/sky130A/libs.ref/sky130_fd_sc_hd/spice/sky130_fd_sc_hd.spice sky130_fd_sc_hd__and2_1"
+```
+
+<p align="center">
+    <img src="images/module_02/lvs_execution_18.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 16. Executing Layout Versus Schematic (LVS) verification using Netgen.</em>
+</p>
+
+<p align="center">
+    <img src="images/module_02/lvs_result_19.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 17. LVS comparison between the extracted layout netlist and the reference SPICE netlist.</em>
+</p>
+
+> **Observation:** Netgen successfully compares the extracted layout with the reference schematic netlist and reports the LVS verification result.
+
+After confirming the electrical equivalence between the layout and schematic, the final verification step is to compare layouts using **XOR verification**.
+---
+
+### XOR Verification
+
+XOR verification compares two layout databases and highlights any geometric differences between them. This technique is commonly used to validate layout modifications and identify unintended changes.
+
+#### Commands Used
+
+```tcl
+flatten -nolabels xor_test
+
+xor -nolabels xor_test
+
+load xor_test
+```
+
+<p align="center">
+    <img src="images/module_02/xor_verification_20.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 18. Performing XOR verification to compare layout differences.</em>
+</p>
+
+> **Observation:** XOR verification highlights any geometric differences between the reference and modified layouts, helping identify unintended layout changes.
+
+
+## Module 02 – Physical Verification Command Reference
+
+| Command | Purpose |
+|:--------|:--------|
+| `gds read` | Imports a GDS layout into Magic. |
+| `load` | Opens an existing layout cell for viewing or editing. |
+| `getcell` | Places an instance of a cell into the current layout. |
+| `lef read` | Imports LEF information for standard cells. |
+| `readspice` | Loads the reference SPICE netlist into Magic. |
+| `extract all` | Extracts the complete layout geometry. |
+| `ext2spice lvs` | Generates an LVS-compatible SPICE netlist. |
+| `ext2spice` | Generates the extracted SPICE netlist. |
+| `ext2spice cthresh 0.01` | Includes parasitic capacitance above the specified threshold. |
+| `ext2sim labels on` | Preserves layout labels in the simulation netlist. |
+| `ext2sim` | Generates a simulation netlist from the extracted layout. |
+| `extresist tolerance 10` | Sets the tolerance for resistance extraction. |
+| `extresist` | Extracts parasitic resistance from the layout. |
+| `ext2spice extresist on` | Includes extracted resistance in the SPICE netlist. |
+| `drc style drc(full)` | Enables the complete SKY130 DRC rule deck. |
+| `drc check` | Runs Design Rule Check on the current layout. |
+| `drc why` | Displays the reason for a DRC violation. |
+| `drc find` | Navigates to the detected DRC violation. |
+| `netgen -batch lvs` | Performs Layout Versus Schematic verification. |
+| `flatten -nolabels` | Creates a flattened layout for comparison. |
+| `xor -nolabels` | Compares two layouts and highlights geometric differences. |
+<p align="right">
+    <a href="#repository-navigation">Back to Navigation ↑</a>
+</p>
+---
