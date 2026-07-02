@@ -46,13 +46,18 @@ The following open-source tools and technologies were used throughout this works
 | **[OpenLANE RTL-to-GDSII Flow Overview](#openlane-rtl-to-gdsii-flow-overview)** | RTL-to-GDSII physical design flow overview |
 ---
 
----
-
 ## Module 01 – Environment Setup & Physical Verification Flow
 
 This module covers the installation of the open-source EDA tools required for physical verification using the **SKY130 Open PDK**. These tools are used throughout the workshop for layout design, circuit simulation, layout extraction, DRC, and LVS verification.
 
 ---
+<p align="center">
+    <img src="images/module_01/physical_verification_flow.png" alt="Physical Verification Workflow" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 1. Physical verification workflow using the SKY130 Open PDK and open-source EDA tools.</em>
+</p>
 
 ### Magic
 
