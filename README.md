@@ -993,74 +993,6 @@ drc find
 
 https://skywater-pdk.readthedocs.io/en/main/rules.html
 
-## Common Issues & Solutions
-
-The following are some common issues encountered during the workshop along with the solutions that worked during implementation.
-
-### Issue 1 – Primitive Cells Not Found During LVS
-
-<p align="center">
-    <img src="images/module_03/openpdk_integration_error.jpeg" width="900">
-</p>
-
-<p align="center">
-    <em>Figure X. LVS error caused by incorrect SKY130 Open_PDK integration.</em>
-</p>
-
-**Problem**
-
-While importing the SPICE netlist or running LVS, Magic/Netgen reports errors such as:
-
-- Unknown cell `sky130_fd_pr_nfet_01v8`
-- Unknown cell `sky130_fd_pr_pfet_01v8`
-- Unable to read primitive cells
-
-**Cause**
-
-The SKY130 Open_PDK technology files were not linked correctly in the working directory.
-
-**Solution**
-
-- Create a fresh working directory for the lab.
-- Copy the required SKY130 technology files into the new directory.
-- Verify that the paths match your installation (they may differ depending on the environment).
-- Import the SPICE netlist again before running LVS.
-
-For example:
-
-```bash
-cp /usr/share/pdk/sky130A/libs.tech/magic/sky130A.magicrc ./.magicrc
-```
-
-> **Note:** Depending on the installation, the PDK may be located under `/usr/share/pdk/...` or `/usr/local/share/pdk/...`. Always verify the correct path before executing the commands.
-
----
-
-### Issue 2 – Unexpected Paint Behavior in Magic
-
-<p align="center">
-    <img src="images/module_03/magic_paint_behavior_issue.jpeg" width="900">
-</p>
-
-<p align="center">
-    <em>Figure X. Unexpected painting behavior while editing layouts in Magic.</em>
-</p>
-
-**Problem**
-
-After cloning the Lab 3 repository and opening Magic, the layout entered paint mode unexpectedly, making normal editing difficult.
-
-**Solution**
-
-Simply:
-
-1. Zoom out (`Shift + Z`)
-2. Zoom back in (`Z`)
-
-The layout window returns to normal operation without restarting Magic.
-
-> This issue may occur occasionally while working in the VNC environment and can usually be resolved by refreshing the view through zooming.
-> ---
 
 ## Practical 02 – Via Rules
 
@@ -1170,4 +1102,71 @@ drc find
 
 - **Minimum Area Rule:** Verified that layout polygons satisfy the minimum area requirement specified by the SKY130 design rules to ensure manufacturable geometries.
 - **Minimum Hole Rule:** Verified that enclosed openings within layout polygons satisfy the minimum hole size requirement, preventing fabrication issues caused by excessively small holes.
+## Common Issues & Solutions
 
+The following are some common issues encountered during the workshop along with the solutions that worked during implementation.
+
+### Issue 1 – Primitive Cells Not Found During LVS
+
+<p align="center">
+    <img src="images/module_03/openpdk_integration_error.jpeg" width="900">
+</p>
+
+<p align="center">
+    <em>Figure X. LVS error caused by incorrect SKY130 Open_PDK integration.</em>
+</p>
+
+**Problem**
+
+While importing the SPICE netlist or running LVS, Magic/Netgen reports errors such as:
+
+- Unknown cell `sky130_fd_pr_nfet_01v8`
+- Unknown cell `sky130_fd_pr_pfet_01v8`
+- Unable to read primitive cells
+
+**Cause**
+
+The SKY130 Open_PDK technology files were not linked correctly in the working directory.
+
+**Solution**
+
+- Create a fresh working directory for the lab.
+- Copy the required SKY130 technology files into the new directory.
+- Verify that the paths match your installation (they may differ depending on the environment).
+- Import the SPICE netlist again before running LVS.
+
+For example:
+
+```bash
+cp /usr/share/pdk/sky130A/libs.tech/magic/sky130A.magicrc ./.magicrc
+```
+
+> **Note:** Depending on the installation, the PDK may be located under `/usr/share/pdk/...` or `/usr/local/share/pdk/...`. Always verify the correct path before executing the commands.
+
+---
+
+### Issue 2 – Unexpected Paint Behavior in Magic
+
+<p align="center">
+    <img src="images/module_03/magic_paint_behavior_issue.jpeg" width="900">
+</p>
+
+<p align="center">
+    <em>Figure X. Unexpected painting behavior while editing layouts in Magic.</em>
+</p>
+
+**Problem**
+
+After cloning the Lab 3 repository and opening Magic, the layout entered paint mode unexpectedly, making normal editing difficult.
+
+**Solution**
+
+Simply:
+
+1. Zoom out (`Shift + Z`)
+2. Zoom back in (`Z`)
+
+The layout window returns to normal operation without restarting Magic.
+
+> This issue may occur occasionally while working in the VNC environment and can usually be resolved by refreshing the view through zooming.
+> ---
