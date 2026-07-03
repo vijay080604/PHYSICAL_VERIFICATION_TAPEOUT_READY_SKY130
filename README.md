@@ -2460,3 +2460,423 @@ exercise_6_comp.out -json | tee lvs.log
 
 ---
 
+# Exercise 07: Resolving LVS Issues Due to Behavioral Verilog and Power Rail Connections
+
+## Objective
+
+This exercise demonstrates two common Layout Versus Schematic (LVS) issues encountered during physical verification of the **mgmt_protect** block. The first issue arises because Netgen cannot compare behavioral Verilog descriptions and treats them as black boxes. The second issue is caused by multiple power rails sharing the same substrate in the layout, while Magic extracts them as separate connections. The objective is to resolve both issues and achieve a clean LVS result.
+
+---
+
+## Workflow Overview
+
+```
+Management Protect Layout
+          │
+          ▼
+Extract Layout using Magic
+          │
+          ▼
+Generate SPICE Netlist
+          │
+          ▼
+Run Netgen LVS
+          │
+          ▼
+Behavioral Verilog Detected
+          │
+          ▼
+Netgen Treats Module as Black Box
+          │
+          ▼
+Modify Verilog Netlist
+          │
+          ▼
+Resolve Power Rail Connections
+          │
+          ▼
+Update LVS Run Script
+          │
+          ▼
+Re-run LVS
+          │
+          ▼
+Successful LVS Verification
+```
+
+---
+
+# Step 1: Inspecting the Management Protect Layout
+
+The **mgmt_protect** block is first loaded in Magic for layout extraction. This layout contains multiple power domains and high-voltage protection circuitry that will later be compared against the Verilog description during LVS.
+
+### Management Protect Layout
+
+<p align="center">
+<img src="images/module_04/7_layout_lvs_extraction.png" width="900">
+</p>
+
+---
+
+# Step 2: Performing Layout Extraction
+
+The layout is extracted using Magic with the LVS extraction command.
+
+```tcl
+ext2spice lvs
+```
+
+Magic successfully generates the extracted SPICE netlist required for Netgen comparison.
+
+### Layout Extraction
+
+<p align="center">
+<img src="images/module_04/7_layout_lvs_extraction.png" width="900">
+</p>
+
+---
+
+# Step 3: Running LVS and Observing the Initial Error
+
+After running Netgen, the comparison fails because the Verilog description of **mgmt_protect** contains behavioral assignments instead of a purely structural implementation.
+
+Netgen therefore treats the module as a **black box**, preventing structural comparison.
+
+The error log reports messages similar to:
+
+- Module is not structural Verilog
+- Treating module as black box
+- Cannot find matching structural cell
+
+### Initial LVS Error
+
+<p align="center">
+<img src="images/module_04/7_magic_protect_not_done.png" width="900">
+</p>
+
+---
+
+# Step 4: Understanding the Root Cause
+
+Netgen performs LVS by comparing structural connectivity.
+
+If the Verilog module contains behavioral constructs such as:
+
+- `assign`
+- `always`
+- behavioral logic
+
+instead of instantiated standard cells, Netgen cannot flatten and compare the design. Consequently, it treats the module as a black box and skips internal verification.
+
+---
+
+# Step 5: Editing the Management Protect Netlist
+
+To resolve the black-box issue, the management protection Verilog is modified so that the required power connections are explicitly tied together.
+
+For example, the substrate connections are tied using assignments such as:
+
+```verilog
+assign vssa1 = vssd;
+assign vssa2 = vssd;
+```
+
+This ensures that the extracted layout and Verilog netlist represent identical substrate connectivity.
+
+### Updating Power Connections
+
+<p align="center">
+<img src="images/module_04/7_editing_mgmt_high.png" width="900">
+</p>
+
+---
+
+# Step 6: Reviewing the Management Protect Verilog
+
+The management protection module contains multiple power rails associated with different voltage domains.
+
+Since Magic extracts substrate connections differently, these power rails must be explicitly connected inside the Verilog description.
+
+### Management Protect Netlist
+
+<p align="center">
+<img src="images/module_04/7_mgmt_netlist.png" width="900">
+</p>
+
+---
+
+# Step 7: Updating the LVS Run Script
+
+The `run_lvs.sh` script is modified to execute LVS on the corrected **mgmt_protect** netlist.
+
+The script includes the GDS extraction environment variable together with the Netgen command.
+
+```bash
+export MAGIC_EXT_USE_GDS=1
+
+netgen -batch lvs \
+"../mag/mgmt_protect.spice mgmt_protect" \
+"../verilog/gl/mgmt_protect.v mgmt_protect" \
+/usr/share/pdk/sky130A/libs.tech/netgen/sky130A_setup.tcl \
+exercise_7_comp.out -json | tee lvs.log
+```
+
+### Updated run_lvs Script
+
+<p align="center">
+<img src="images/module_04/7_editing_run_lvs.sh_with_gl.png" width="900">
+</p>
+
+---
+
+# Step 8: Re-running LVS
+
+After modifying the Verilog netlist and correcting the substrate connections, Netgen performs a structural comparison successfully.
+
+The management protection circuitry can now be matched against the extracted layout.
+
+---
+
+# Key Learning Outcomes
+
+- Understood why behavioral Verilog cannot be directly compared during LVS.
+- Learned that Netgen requires structural Verilog descriptions for proper circuit matching.
+- Identified how Magic extracts multiple substrate and power connections.
+- Corrected substrate connectivity by explicitly tying equivalent power rails.
+- Updated the LVS execution script to use the corrected gate-level netlist.
+- Successfully prepared the management protection block for structural LVS verification.
+
+---
+
+# Commands Used
+
+```bash
+ext2spice lvs
+
+export MAGIC_EXT_USE_GDS=1
+
+netgen -batch lvs \
+"../mag/mgmt_protect.spice mgmt_protect" \
+"../verilog/gl/mgmt_protect.v mgmt_protect" \
+/usr/share/pdk/sky130A/libs.tech/netgen/sky130A_setup.tcl \
+exercise_7_comp.out -json | tee lvs.log
+```
+
+---
+
+# Observations
+
+- Behavioral Verilog modules are treated as black boxes by Netgen.
+- LVS requires a structural gate-level representation for complete comparison.
+- Multiple substrate connections extracted by Magic can create apparent mismatches.
+- Explicitly tying equivalent power rails resolves these extraction inconsistencies.
+- After modifying the Verilog netlist and updating the LVS script, the management protection block becomes suitable for structural LVS verification.
+
+---
+## Exercise 08 – LVS Debugging and Mismatch Resolution
+
+This exercise focuses on identifying and resolving LVS mismatches in the **digital_pll** layout. The debugging process includes enabling GDS-based extraction, fixing a missing diode, restoring VPWR connectivity, and repairing the final broken clock net until LVS converges.
+
+---
+
+### Step 1: Initial LVS Result
+
+The initial LVS comparison reports multiple device and net mismatches.
+
+<p align="center">
+<img src="images/module_04/exer_8_1.png" width="90%">
+</p>
+
+---
+
+### Step 2: Review the Netgen Report
+
+The generated Netgen report highlights the mismatched devices and missing components.
+
+<p align="center">
+<img src="images/module_04/exer_8_2.png" width="90%">
+</p>
+
+---
+
+### Step 3: Enable GDS-Based Extraction
+
+To include antenna-generated devices during extraction, add the following line to **run_lvs.sh** before running LVS.
+
+```bash
+export MAGIC_EXT_USE_GDS=1
+```
+
+<p align="center">
+<img src="images/module_04/exer_8_3_after_adding_gds=1.png" width="90%">
+</p>
+
+---
+
+### Step 4: Locate the Missing Diode
+
+The LVS report now indicates a missing diode in the Verilog netlist.
+
+Locate the diode in Magic using:
+
+```tcl
+select cell sky130_fd_sc_hd__diode_2_0
+```
+
+<p align="center">
+<img src="images/module_04/exer_8_4_unmatched_diode.png" width="90%">
+</p>
+
+<p align="center">
+<img src="images/module_04/exer_8_5_cell_finding_result.png" width="90%">
+</p>
+
+---
+
+### Step 5: Verify Diode Connectivity
+
+Check the node connected to the diode.
+
+```tcl
+getnode
+```
+
+> **Tip:** Press **`s`** three times in Magic to select the complete connected net.
+
+<p align="center">
+<img src="images/module_04/exer_8_6_node_find.png" width="90%">
+</p>
+
+The missing diode connection is then manually added to the Verilog netlist.
+
+<p align="center">
+<img src="images/module_04/exer_8_7.png" width="90%">
+</p>
+
+After updating the Verilog file, the diode mismatch is resolved.
+
+<p align="center">
+<img src="images/module_04/exer_8_8_diode_error_fixed.png" width="90%">
+</p>
+
+---
+
+### Step 6: Resolve VPWR Connectivity
+
+The next LVS report highlights unmatched devices connected to **instance_249**.
+
+<p align="center">
+<img src="images/module_04/exer_8_9_decap_cell_249.png" width="90%">
+</p>
+
+The layout inspection shows that the **via3** connection to the VPWR rail is missing.
+
+<p align="center">
+<img src="images/module_04/exer_8_10_network_connectivity.png" width="90%">
+</p>
+
+Paint the missing **via3** to restore connectivity.
+
+<p align="center">
+<img src="images/module_04/exer_8_11_paint_v3.png" width="90%">
+</p>
+
+After extraction, the VPWR mismatches are eliminated.
+
+<p align="center">
+<img src="images/module_04/exer_8_12.png" width="90%">
+</p>
+
+<p align="center">
+<img src="images/module_04/exer_8_13_extraction.png" width="90%">
+</p>
+
+---
+
+### Step 7: Fix the Final Net Mismatch
+
+After resolving the previous issues, only one unmatched net remains.
+
+<p align="center">
+<img src="images/module_04/exer_8_14.png" width="90%">
+</p>
+
+The report identifies a mismatch involving **instance_364**.
+
+<p align="center">
+<img src="images/module_04/exer_8_15_single_pin_on_layout_side.png" width="90%">
+</p>
+
+The broken **CLK** connection is located in the layout.
+
+<p align="center">
+<img src="images/module_04/exer_8_16_364_clk.png" width="90%">
+</p>
+
+Reconnect the missing clock routing and verify the feedback path.
+
+<p align="center">
+<img src="images/module_04/exer_8_17_feedback_364.png" width="90%">
+</p>
+
+The corrected routing restores complete net connectivity.
+
+<p align="center">
+<img src="images/module_04/exer_8_18_328_path.png" width="90%">
+</p>
+
+---
+## Exercise 09 – Resolving LVS Property Mismatches
+
+This exercise focuses on resolving **property mismatches** reported during LVS. Unlike connectivity errors, property mismatches occur when device parameters such as **width (W)**, **length (L)**, or other physical properties differ between the schematic and the extracted layout.
+
+---
+
+### Step 1: Initial LVS Result
+
+The initial LVS run reports property mismatches while the circuit topology matches successfully.
+
+<p align="center">
+<img src="images/module_04/exer_9_1.png" width="90%">
+</p>
+
+---
+
+### Step 2: Review the Property Errors
+
+The detailed Netgen report identifies the devices with mismatched physical properties, including capacitors and transistors.
+
+<p align="center">
+<img src="images/module_04/exer_9_2.png" width="90%">
+</p>
+
+<p align="center">
+<img src="images/module_04/exer_9_3.png" width="90%">
+</p>
+
+---
+
+### Step 3: Correct the Device Properties
+
+Inspect the affected components in the schematic and update the mismatched parameters (such as **W** and **L**) to match the extracted layout.
+
+<p align="center">
+<img src="images/module_04/exer_9_4.png" width="90%">
+</p>
+
+---
+
+### Step 4: Re-run LVS
+
+After correcting the device properties, rerun LVS to verify the changes. The number of property mismatches is reduced, confirming that the updates have been applied successfully.
+
+<p align="center">
+<img src="images/module_04/exer_9_5.png" width="90%">
+</p>
+
+---
+---
+<p align="right">
+    <a href="#repository-navigation">Back to Navigation ↑</a>
+</p>
+
