@@ -882,6 +882,46 @@ getcell exercise_11_fill_pattern child 0 0
 > **Purpose:** Generates and loads metal fill patterns required to satisfy density rules before tapeout.
 > > 📄 **Quick Reference:** [Magic Layout Shortcut Keys & Commands (PDF)](images/module_03/Magic_rules_and_short_keys.pdf)
 > ---
+>
+> ---
+
+## Practical 01 – Minimum Width Rule
+
+### Objective
+
+Understand how the minimum width rule is checked and why narrow geometries violate the SKY130 design rules.
+
+#### Commands Used
+
+```tcl
+drc check
+
+drc why
+
+drc find
+```
+
+<p align="center">
+    <img src="images/module_03/minimum_width_rule_01a_before.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 37. Minimum width rule violation of exercise_1a identified using Magic DRC.</em>
+</p>
+<p align="center">
+    <img src="images/module_03/minimum_width_rule_01a_after.png" width="900">
+</p>
+
+<p align="center">
+    <em>Figure 38. Minimum width rule solution of exercise_1a  using Magic DRC.</em>
+</p>
+
+
+> **Observation:** The layout violates the minimum width requirement defined by the SKY130 design rules. Increasing the geometry width removes the violation.
+
+**Official Rule Reference**
+
+https://skywater-pdk.readthedocs.io/en/main/rules.html
 
 ## Common Issues & Solutions
 
