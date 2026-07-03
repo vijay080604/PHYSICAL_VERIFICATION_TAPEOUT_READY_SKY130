@@ -1407,25 +1407,18 @@ drc why
 
 Understand the **density verification** process in the SKY130 PDK and learn how metal fill patterns are generated to satisfy the minimum and maximum density requirements before tapeout. This practical demonstrates density analysis, automatic fill generation, and verification using Magic.
 
-#### Commands Used
-
-```tcl
-cif cover MET2
-```
-
-```bash
+#### SKY130 Utility Scripts
 /usr/share/pdk/sky130A/libs.tech/magic/check_density.py exercise_11.gds
 
 /usr/share/pdk/sky130A/libs.tech/magic/generate_fill.py exercise_11.mag
-```
 
-```tcl
+#### Magic Commands
+cif cover MET2
+
 load exercise_11
-
 box values 0 0 0 0
-
 getcell exercise_11_fill_pattern child 0 0
-```
+
 
 <table align="center">
 <tr>
