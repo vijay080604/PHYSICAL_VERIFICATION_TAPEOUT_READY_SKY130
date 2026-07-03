@@ -987,11 +987,7 @@ drc find
 </tr>
 </table>
 
-> **Observation:** The layout violates the minimum width requirement defined by the SKY130 design rules. Increasing the geometry width removes the violation.
 
-**Official Rule Reference**
-
-https://skywater-pdk.readthedocs.io/en/main/rules.html
 
 
 ## Practical 02 – Via Rules
@@ -1054,12 +1050,6 @@ drc find
 </tr>
 </table>
 
-### Observation
-
-- **Via Size:** Verified the minimum via dimensions required by the SKY130 design rules.
-- **Multiple Vias:** Demonstrated the placement of multiple vias to improve current handling and interconnect reliability.
-- **Via Overlap:** Verified that the via is correctly enclosed by the adjacent metal layers to satisfy enclosure requirements.
-- **Automatic Via Generation:** Used Magic's automatic via generation feature to insert valid vias between connected metal layers.
 ---
 
 ## Practical 03 – Area Rules
@@ -1098,10 +1088,6 @@ drc find
 </tr>
 </table>
 
-### Observation
-
-- **Minimum Area Rule:** Verified that layout polygons satisfy the minimum area requirement specified by the SKY130 design rules to ensure manufacturable geometries.
-- **Minimum Hole Rule:** Verified that enclosed openings within layout polygons satisfy the minimum hole size requirement, preventing fabrication issues caused by excessively small holes.
 -
 ## Practical 04 – Well Rules
 ### Objective
@@ -1137,11 +1123,6 @@ drc find
 
 </tr>
 </table>
-
-### Observation
-
-- **Well Rule:** Verified the layout requirements associated with well regions to ensure correct device placement and electrical isolation.
-- **Deep N-well Rule:** Verified the implementation of deep N-well structures used to improve substrate isolation and reduce noise coupling in mixed-signal designs.
 
 ---
 
@@ -1200,12 +1181,6 @@ drc find
 
 </tr>
 </table>
-
-### Observation
-
-- **Derived Layers:** Verified the derived layers created from existing layout geometries for DRC evaluation.
-- **High-Voltage Derived Layers:** Observed the derived layers associated with high-voltage devices and their verification requirements.
-- **Automatic Derived Layers:** Demonstrated how Magic automatically generates derived layers that are internally used for rule checking without requiring manual layout creation.
   
   ---
 
@@ -1255,12 +1230,6 @@ drc find
     <em><b>Figure 58.</b> Final parameterized device layout satisfying SKY130 design rules.</em>
 </p>
 
-### Observation
-
-- **Parameterized Device Creation:** Demonstrated the generation of parameterized devices using the SKY130 PDK.
-- **PCell Configuration:** Verified that device parameters can be modified while maintaining valid layout geometries.
-- **Design Rule Compliance:** Confirmed that the generated parameterized devices satisfy the required DRC constraints before fabrication.
-
 ---
 
 ## Practical 07 – Angle Rules
@@ -1308,12 +1277,6 @@ drc find
 <p align="center">
     <em><b>Figure 61.</b> Corrected layout satisfying the SKY130 angle rule.</em>
 </p>
-
-### Observation
-
-- **Angle Rule Detection:** Identified layout geometries containing unsupported or non-manufacturable angles using Magic DRC.
-- **Violation Analysis:** Examined the reported DRC messages to understand the cause of the violation.
-- **Rule Compliance:** Modified the layout to satisfy the SKY130 angle rule, resulting in a DRC-clean design.
 
 ---
 
@@ -1363,9 +1326,6 @@ drc find
     <em><b>Figure 64.</b> Final seal ring layout satisfying the required SKY130 design rules.</em>
 </p>
 
-### Observation
-- **Rule Analysis:** Identified and analyzed DRC violations associated with the seal ring geometry and spacing.
-- **Final Verification:** Confirmed that the corrected seal ring layout satisfies the required SKY130 design rules, ensuring improved robustness for fabrication and packaging.
 
 ---
 
@@ -1390,9 +1350,144 @@ drc find
 <p align="center">
     <em><b>Figure 65.</b> Latch-up rule verification using Magic DRC.</em>
 </p>
-### Observation
-- **Well Isolation:** Confirmed that the required spacing and isolation between wells and diffusion regions satisfy the specified design constraints.
-- **Design Reliability:** Ensuring compliance with latch-up rules improves circuit robustness by preventing parasitic conduction paths during device operation.
+
+## Practical 10 – Antenna Rules
+
+### Objective
+
+Understand the **antenna effect** in VLSI layouts and verify the corresponding **antenna rules** using Magic DRC. This practical demonstrates how antenna violations occur during fabrication, how they are identified, and the techniques used to eliminate them for reliable chip manufacturing.
+
+#### Commands Used
+
+```tcl
+antennacheck
+antennacheck debug
+drc check
+drc why
+```
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/antenna_rules_10a.png" width="100%">
+
+**Figure 66.** Antenna rule verification using Magic DRC.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/antenna_rules_10b.png" width="100%">
+
+**Figure 67.** Analysis of antenna rule violations.
+
+</td>
+
+</tr>
+</table>
+
+<br>
+
+<p align="center">
+    <img src="images/module_03/antenna_rules_10c.png" width="70%">
+</p>
+
+<p align="center">
+    <em><b>Figure 68.</b> Corrected layout satisfying the SKY130 antenna rules.</em>
+</p>
+
+
+---
+
+## Practical 11 – Density Rules
+
+### Objective
+
+Understand the **density verification** process in the SKY130 PDK and learn how metal fill patterns are generated to satisfy the minimum and maximum density requirements before tapeout. This practical demonstrates density analysis, automatic fill generation, and verification using Magic.
+
+#### Commands Used
+
+```tcl
+cif cover MET2
+```
+
+```bash
+/usr/share/pdk/sky130A/libs.tech/magic/check_density.py exercise_11.gds
+
+/usr/share/pdk/sky130A/libs.tech/magic/generate_fill.py exercise_11.mag
+```
+
+```tcl
+load exercise_11
+
+box values 0 0 0 0
+
+getcell exercise_11_fill_pattern child 0 0
+```
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/density_rule_11a.png" width="100%">
+
+**Figure 69.** Checking metal density using the `cif cover MET2` command.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/density_rule_11b.png" width="100%">
+
+**Figure 70.** Running the SKY130 density checking script.
+
+</td>
+
+</tr>
+</table>
+
+<br>
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/density_rule_11c.png" width="100%">
+
+**Figure 71.** Automatic generation of metal fill patterns.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/density_rule_11d.png" width="100%">
+
+**Figure 72.** Loading the generated fill pattern into the layout.
+
+</td>
+
+</tr>
+</table>
+
+<br>
+
+<p align="center">
+    <img src="images/module_03/density_rule_11e.png" width="75%">
+</p>
+
+<p align="center">
+    <em><b>Figure 73.</b> Final layout after inserting the generated fill pattern.</em>
+</p>
+
+**Learn More**
+
+The complete density verification methodology and related design rules are available in the official SKY130 documentation:
+
+https://skywater-pdk.readthedocs.io/en/main/rules.html
 
 ## Common Issues & Solutions
 
