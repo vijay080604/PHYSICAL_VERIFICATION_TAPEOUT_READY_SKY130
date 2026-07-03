@@ -1102,6 +1102,165 @@ drc find
 
 - **Minimum Area Rule:** Verified that layout polygons satisfy the minimum area requirement specified by the SKY130 design rules to ensure manufacturable geometries.
 - **Minimum Hole Rule:** Verified that enclosed openings within layout polygons satisfy the minimum hole size requirement, preventing fabrication issues caused by excessively small holes.
+-
+## Practical 04 – Well Rules
+### Objective
+
+Understand the **well-related design rules** in the SKY130 PDK, focusing on **well structures** and **deep N-well implementation**. These rules ensure proper device isolation, substrate biasing, and reliable fabrication of CMOS layouts.
+
+#### Commands Used
+
+```tcl
+drc check
+drc why
+drc find
+```
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/wells_rule_04a.png" width="100%">
+
+**Figure 51.** Well rule verification.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/deep_nwell_rule_04b.png" width="100%">
+
+**Figure 52.** Deep N-well rule verification.
+
+</td>
+
+</tr>
+</table>
+
+### Observation
+
+- **Well Rule:** Verified the layout requirements associated with well regions to ensure correct device placement and electrical isolation.
+- **Deep N-well Rule:** Verified the implementation of deep N-well structures used to improve substrate isolation and reduce noise coupling in mixed-signal designs.
+
+---
+
+## Practical 05 – Derived Layers
+
+### Objective
+
+Understand the concept of **derived layers** in the SKY130 PDK and their role in physical verification. This practical demonstrates standard derived layers, high-voltage derived layers, and the automatic generation of derived layers used internally by the DRC engine.
+
+#### Commands Used
+
+```tcl
+drc check
+drc why
+drc find
+```
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/derived_layers_05a.png" width="100%">
+
+**Figure 53.** Standard derived layer verification.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/derived_layer_high_voltage_05b.png" width="100%">
+
+**Figure 54.** High-voltage derived layer verification.
+
+</td>
+
+</tr>
+</table>
+
+<br>
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/derived_layers_automatic_generation_05c.png" width="100%">
+
+**Figure 55.** Automatic generation of derived layers during DRC verification.
+
+</td>
+
+<td align="center" width="50%">
+
+</td>
+
+</tr>
+</table>
+
+### Observation
+
+- **Derived Layers:** Verified the derived layers created from existing layout geometries for DRC evaluation.
+- **High-Voltage Derived Layers:** Observed the derived layers associated with high-voltage devices and their verification requirements.
+- **Automatic Derived Layers:** Demonstrated how Magic automatically generates derived layers that are internally used for rule checking without requiring manual layout creation.
+  
+  ---
+
+## Practical 06 – Parameterized Devices (PCell)
+
+### Objective
+
+Understand the implementation of **Parameterized Devices (PCell)** in the SKY130 PDK. This practical demonstrates how parameterized cells are generated, configured, and verified to ensure that device geometries satisfy the required physical design rules.
+
+#### Commands Used
+
+```tcl
+drc check
+drc why
+drc find
+```
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/parameterized_devices_06a.png" width="100%">
+
+**Figure 56.** Parameterized device implementation.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/parameterized_devices_06b.png" width="100%">
+
+**Figure 57.** Parameterized device configuration and verification.
+
+</td>
+
+</tr>
+</table>
+
+<br>
+
+<p align="center">
+    <img src="images/module_03/parameterized_devices_06c.png" width="70%">
+</p>
+
+<p align="center">
+    <em><b>Figure 58.</b> Final parameterized device layout satisfying SKY130 design rules.</em>
+</p>
+
+### Observation
+
+- **Parameterized Device Creation:** Demonstrated the generation of parameterized devices using the SKY130 PDK.
+- **PCell Configuration:** Verified that device parameters can be modified while maintaining valid layout geometries.
+- **Design Rule Compliance:** Confirmed that the generated parameterized devices satisfy the required DRC constraints before fabrication.
+
 ## Common Issues & Solutions
 
 The following are some common issues encountered during the workshop along with the solutions that worked during implementation.
