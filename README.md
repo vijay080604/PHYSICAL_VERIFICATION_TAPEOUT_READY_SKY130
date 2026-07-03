@@ -900,22 +900,92 @@ drc why
 
 drc find
 ```
+<table align="center">
+<tr>
+<td align="center" width="50%">
 
-<p align="center">
-    <img src="images/module_03/minimum_width_rule_01a_before.png" width="900">
-</p>
+<img src="images/module_03/minimum_width_rule_01a_before.png" width="100%">
 
-<p align="center">
-    <em>Figure 37. Minimum width rule violation of exercise_1a identified using Magic DRC.</em>
-</p>
-<p align="center">
-    <img src="images/module_03/minimum_width_rule_01a_after.png" width="900">
-</p>
+**Figure 37.** Minimum width rule violation (**Before Fix**).
 
-<p align="center">
-    <em>Figure 38. Minimum width rule solution of exercise_1a  using Magic DRC.</em>
-</p>
+</td>
 
+<td align="center" width="50%">
+
+<img src="images/module_03/minimum_width_rule_01a_after.png" width="100%">
+
+**Figure 38.** Minimum width rule after applying the required fix.
+
+</td>
+</tr>
+</table>
+
+<br>
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/minimum_width_rule_01b_before.png" height="250">
+
+**Figure 39.** Minimum spacing rule violation (**Before Fix**).
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/minimum_width_rule_01b_after.png" height="250">
+
+**Figure 40.** Minimum spacing rule after applying the required fix.
+
+</td>
+
+</tr>
+</table>
+<br>
+
+<table align="center">
+<tr>
+<td align="center" width="50%">
+
+<img src="images/module_03/minimum_width_rule_01c_before.png" width="100%">
+
+**Figure 41.** Wide spacing rule violation (**Before Fix**).
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/minimum_width_rule_01c_after.png" width="100%">
+
+**Figure 42.** Wide spacing rule after applying the required fix.
+
+</td>
+</tr>
+</table>
+
+<br>
+
+<table align="center">
+<tr>
+<td align="center" width="50%">
+
+<img src="images/module_03/minimum_width_rule_01d_before.png" width="100%">
+
+**Figure 43.** Notch rule violation (**Before Fix**).
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/minimum_width_rule_01d_after.png" width="100%">
+
+**Figure 44.** Notch rule after applying the required fix.
+
+</td>
+</tr>
+</table>
 
 > **Observation:** The layout violates the minimum width requirement defined by the SKY130 design rules. Increasing the geometry width removes the violation.
 
@@ -990,3 +1060,114 @@ Simply:
 The layout window returns to normal operation without restarting Magic.
 
 > This issue may occur occasionally while working in the VNC environment and can usually be resolved by refreshing the view through zooming.
+> ---
+
+## Practical 02 – Via Rules
+
+### Objective
+
+Understand the fundamental **via-related design rules** in the SKY130 PDK, including via dimensions, multiple via placement, overlap requirements, and automatic via generation. These checks ensure reliable electrical connectivity between adjacent metal layers.
+
+#### Commands Used
+
+```tcl
+drc check
+drc why
+drc find
+```
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/via_size_rule_2a.png" width="100%">
+
+**Figure 45.** Via size rule verification.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/multiple_via_placement_2b.png" width="100%">
+
+**Figure 46.** Multiple via placement verification.
+
+</td>
+
+</tr>
+</table>
+
+<br>
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/via_overlap_rule_2c.png" width="100%">
+
+**Figure 47.** Via overlap rule verification.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/automatic_via_generation_2d.png" width="100%">
+
+**Figure 48.** Automatic via generation using Magic.
+
+</td>
+
+</tr>
+</table>
+
+### Observation
+
+- **Via Size:** Verified the minimum via dimensions required by the SKY130 design rules.
+- **Multiple Vias:** Demonstrated the placement of multiple vias to improve current handling and interconnect reliability.
+- **Via Overlap:** Verified that the via is correctly enclosed by the adjacent metal layers to satisfy enclosure requirements.
+- **Automatic Via Generation:** Used Magic's automatic via generation feature to insert valid vias between connected metal layers.
+---
+
+## Practical 03 – Area Rules
+
+### Objective
+
+Understand the **minimum area** and **minimum hole** rules defined in the SKY130 PDK. These rules ensure that layout geometries meet the minimum manufacturable area requirements and avoid creating enclosed openings that are too small for reliable fabrication.
+
+#### Commands Used
+
+```tcl
+drc check
+drc why
+drc find
+```
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/minimum_area_rule_03a.png" width="100%">
+
+**Figure 49.** Minimum area rule verification.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/minimum_hole_rule_03b.png" width="100%">
+
+**Figure 50.** Minimum hole rule verification.
+
+</td>
+
+</tr>
+</table>
+
+### Observation
+
+- **Minimum Area Rule:** Verified that layout polygons satisfy the minimum area requirement specified by the SKY130 design rules to ensure manufacturable geometries.
+- **Minimum Hole Rule:** Verified that enclosed openings within layout polygons satisfy the minimum hole size requirement, preventing fabrication issues caused by excessively small holes.
+
