@@ -1493,7 +1493,7 @@ The following are some common issues encountered during the workshop along with 
 </p>
 
 <p align="center">
-    <em>Figure X. LVS error caused by incorrect SKY130 Open_PDK integration.</em>
+    <em>Figure 74. LVS error caused by incorrect SKY130 Open_PDK integration.</em>
 </p>
 
 **Problem**
@@ -1532,7 +1532,7 @@ cp /usr/share/pdk/sky130A/libs.tech/magic/sky130A.magicrc ./.magicrc
 </p>
 
 <p align="center">
-    <em>Figure X. Unexpected painting behavior while editing layouts in Magic.</em>
+    <em>Figure 75. Unexpected painting behavior while editing layouts in Magic.</em>
 </p>
 
 **Problem**
@@ -1552,3 +1552,669 @@ The layout window returns to normal operation without restarting Magic.
 <p align="right">
     <a href="#repository-navigation">Back to Navigation ↑</a>
 </p>
+
+# Module 04 – Layout Versus Schematic (LVS)
+
+LVS (Layout Versus Schematic) is the final electrical verification stage that confirms whether the extracted layout netlist is electrically equivalent to the original schematic. It verifies device connectivity, net mapping, pin assignments, and hierarchy to ensure the physical implementation accurately represents the intended circuit before tapeout.
+
+This module focuses on understanding the complete **LVS debugging workflow**, identifying common mismatch scenarios, analyzing Netgen reports, and systematically resolving layout or schematic inconsistencies to achieve a clean LVS result.
+
+<p align="center">
+    <img src="images/module_04/lvs_debugging_workflow.png" width="100%">
+</p>
+
+<p align="center">
+    <em><b>Figure 76.</b> Complete Layout Versus Schematic (LVS) debugging workflow using Magic and Netgen.</em>
+</p>
+
+---
+## Practical 01 – Netgen LVS Fundamentals
+
+### Objective
+
+Understand how **Netgen** compares two SPICE netlists, identifies electrical mismatches, and reports connectivity differences during LVS verification.
+
+---
+
+### Commands Used
+
+```bash
+git clone https://github.com/RTimothyEdwards/vsd_lvs_lab.git
+
+cd vsd_lvs_lab
+
+cd exercise_1
+
+ls -al
+
+cat netA.spice
+
+cat netB.spice
+
+diff netA.spice netB.spice
+
+netgen
+```
+
+Inside Netgen:
+
+```tcl
+lvs netA.spice netB.spice
+```
+
+---
+
+### Practical Implementation
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_04/exercise_1_details_like_git_cloning.png" width="100%">
+
+**Figure 75.** Cloning the VSD LVS laboratory and navigating to Exercise 01.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_04/exercise_1_netlist_details.png" width="100%">
+
+**Figure 76.** Inspecting both SPICE netlists before performing LVS.
+
+</td>
+
+</tr>
+</table>
+
+<br>
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_04/exercise_1_unknown_subckt_netA.png" width="100%">
+
+**Figure 77.** ngspice reports an **unknown subcircuit** error, while Netgen can still perform structural netlist comparison.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_04/exercise_1_after_making_changes_in_netlistA.png" width="100%">
+
+**Figure 78.** Modifying one netlist to intentionally create an LVS mismatch.
+
+</td>
+
+</tr>
+</table>
+
+<br>
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_04/exercise_1_mismatch_output.png" width="100%">
+
+**Figure 79.** Netgen reports that the compared netlists do not match.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_04/exercise_1_fanout.png" width="100%">
+
+**Figure 80.** Device fanout comparison highlighting the connectivity mismatch.
+
+</td>
+
+</tr>
+</table>
+
+---
+
+### Key Points
+
+- Netgen compares **electrical connectivity**, not net names.
+- Equivalent nets are automatically grouped during LVS comparison.
+- Device mismatches are reported using **pin fanout** information.
+- Debugging usually starts from the **net mismatch** section before analyzing device mismatches.
+
+---
+## Practical 02 – LVS Comparison Using Subcircuits
+
+### Objective
+
+Understand how Netgen handles subcircuit definitions, compare LVS at the subcircuit level, and verify the effect of pin ordering during netlist comparison.
+
+---
+
+### Commands Used
+
+```bash
+netgen
+
+lvs netA.spice netB.spice
+
+reinitialize
+
+lvs "netA.spice test" "netB.spice test"
+```
+
+---
+
+### Practical Implementation
+
+<table align="center">
+<tr>
+<td align="center" width="50%">
+
+<img src="images/module_04/exercise_2_netlist_details.png" width="100%">
+
+**Figure 81.** Netlists containing the **test** subcircuit.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_04/exercise_2_initial_lvs.png" width="100%">
+
+**Figure 82.** Initial LVS comparison without selecting the subcircuit.
+
+</td>
+</tr>
+</table>
+
+The first LVS comparison treats the netlists as empty because the `.subckt` definition only declares the circuit structure. Since there are no instantiated subcircuits, Netgen reports no active devices or nets.
+
+---
+
+<table align="center">
+<tr>
+<td align="center" width="50%">
+
+<img src="images/module_04/exercise_2_test_lvs.png" width="100%">
+
+**Figure 83.** LVS executed by explicitly selecting the **test** subcircuit.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_04/exercise_2_test_lvs_summary.png" width="100%">
+
+**Figure 84.** Successful LVS comparison showing unique circuit matching.
+
+</td>
+</tr>
+</table>
+
+Providing the subcircuit name enables Netgen to compare the actual circuit implementation instead of only the definitions.
+
+---
+
+<table align="center">
+<tr>
+<td align="center" width="50%">
+
+<img src="images/module_04/exercise_2_lvs_of_change_oforderpins.png" width="100%">
+
+**Figure 85.** LVS after changing only the port order.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_04/exercise_2_wrong_pin_match_lvs.png" width="100%">
+
+**Figure 86.** LVS reporting top-level pin mismatch.
+
+</td>
+</tr>
+</table>
+
+Changing only the order of the port names does not affect LVS because Netgen matches ports using their names. However, changing the actual top-level pin mapping results in a mismatch.
+
+---
+
+<p align="center">
+<img src="images/module_04/proof_of_pin_mismatch_exercise_2.png" width="80%">
+</p>
+
+<p align="center">
+<b>Figure 87.</b> Detailed report highlighting the top-level pin mismatch.
+</p>
+
+---
+
+### Key Points
+
+- `.subckt` defines a circuit but is not treated as an active device.
+- Use `reinitialize` before performing another LVS comparison.
+- Comparing at the subcircuit level provides accurate LVS results.
+- Netgen matches ports by **pin name**, not by their order.
+- Top-level pin names must match for LVS to pass successfully.
+
+# Exercise 03 – Batch Mode LVS & Blackbox Cell Handling
+## Objective
+
+Learn how to execute LVS in Netgen using **batch mode**, generate machine-readable JSON reports, understand **blackbox cell behavior**, and analyze the impact of pin and cell modifications during LVS verification.
+
+---
+
+## Commands Used
+
+```bash
+netgen -batch lvs "netA.spice test" "netB.spice test" \
+/usr/local/share/pdk/sky130A/libs.tech/netgen/sky130A_setup.tcl \
+exercise_3_comp.out -json | tee lvs.log
+
+../count_lvs.py | tee -a lvs.log
+
+netgen -batch lvs "netA.spice test" "netB.spice test" \
+/usr/local/share/pdk/sky130A/libs.tech/netgen/sky130A_setup.tcl \
+exercise_3_comp.out -json -blackbox | tee lvs.log
+```
+
+---
+
+## Practical Implementation
+
+Initially, LVS is executed in **batch mode**, generating both a standard comparison report and a JSON output suitable for automated processing. Empty subcircuits are treated as **blackbox cells**, allowing Netgen to compare only their interfaces.
+
+<p align="center">
+  <img src="images/module_04/exercise_3_netlistA.png" width="48%">
+  &nbsp;
+  <img src="images/module_04/exercise_3_initial_lvs_match.png" width="48%">
+</p>
+
+<p align="center">
+<b>Figure 1.</b> Batch-mode LVS setup and successful comparison of blackbox subcircuits.
+</p>
+
+---
+
+Next, the pin order of **cell1** is modified to observe how Netgen interprets interface changes. Although the circuit structure remains the same, changing the blackbox interface results in pin mapping differences during LVS.
+
+<p align="center">
+  <img src="images/module_04/exercise_3_lvs_correct1_of_resistor_cells_change.png" width="48%">
+  &nbsp;
+  <img src="images/module_04/exercise_3_netlist_mismatch_black_box.png" width="48%">
+</p>
+
+<p align="center">
+<b>Figure 2.</b> Pin order modification resulting in LVS mismatch analysis.
+</p>
+
+---
+
+The port name is then changed from **C** to **D**, causing Netgen to create **proxy pins** for the missing connection. This demonstrates how missing ports are represented when comparing blackbox cells.
+
+<p align="center">
+  <img src="images/module_04/exercise_3_pin_change_to_D_4thone.png" width="48%">
+  &nbsp;
+  <img src="images/module_04/exercise_3_fifth_one_proof_of duplicate_pin_D.png" width="48%">
+</p>
+
+<p align="center">
+<b>Figure 3.</b> Proxy pin generation after modifying the blackbox interface.
+</p>
+
+---
+
+Finally, additional modifications are introduced to evaluate how Netgen handles empty cells during flattening and why the **`-blackbox`** option is required to preserve blackbox behavior during LVS.
+
+<p align="center">
+  <img src="images/module_04/exercise_3_diode_change.png" width="70%">
+</p>
+
+<p align="center">
+<b>Figure 4.</b> Final verification demonstrating blackbox-aware LVS behavior.
+</p>
+
+---
+
+## Key Takeaways
+
+- Executed LVS in **batch mode** with JSON report generation.
+- Used **`count_lvs.py`** for machine-readable LVS analysis.
+- Understood how Netgen treats **empty subcircuits as blackbox cells**.
+- Verified the effect of **pin order and pin name modifications** on LVS.
+- Observed **proxy pin generation** when blackbox interfaces differ.
+- Learned the importance of the **`-blackbox`** option for correct LVS verification of empty cells.
+
+# Exercise 04 – Device Pin Permutation in LVS
+
+## Objective
+
+Learn how Netgen handles **low-level device pin permutation**, configure custom permutation rules in the technology setup file, and verify equivalent circuits containing resistors and diodes during LVS.
+
+---
+
+## Commands Used
+
+```bash
+cp /usr/local/share/pdk/sky130A/libs.tech/netgen/sky130A_setup.tcl .
+
+netgen -batch lvs "netA.spice test" "netB.spice test" \
+sky130A_setup.tcl \
+exercise_4_comp.out -json | tee lvs.log
+```
+
+### Added to `sky130A_setup.tcl`
+
+```tcl
+permute "-circuit1 cell1" A C
+permute "-circuit2 cell1" A C
+```
+
+---
+
+## Practical Implementation
+
+Initially, low-level devices such as **resistors** are introduced into the subcircuits. Since these are primitive devices (not subcircuits), Netgen compares their connectivity directly. After copying the technology setup file locally, custom **pin permutation** rules are added for the resistor cell to allow equivalent pin swapping during LVS.
+
+<p align="center">
+  <img src="images/module_04/exercise_4_netlist_resistor_cell_name_changed.png" width="48%">
+  &nbsp;
+  <img src="images/module_04/exercise_4_initial_lvs.png" width="48%">
+</p>
+
+<p align="center">
+<b>Figure 1.</b> Applying resistor pin permutation rules and verifying a successful LVS match.
+</p>
+
+---
+
+Next, the **diode** subcircuit is modified by swapping ports at both the subcircuit interface and the primitive device level. Although the circuit remains electrically equivalent, the comparison report highlights the updated pin correspondence while still reporting a successful match.
+
+<p align="center">
+  <img src="images/module_04/exercise_4_diode_change_netlist.png" width="48%">
+  &nbsp;
+  <img src="images/module_04/exercise_4_diode_lvs_output.png" width="48%">
+</p>
+
+<p align="center">
+<b>Figure 2.</b> Diode pin permutation verification and LVS comparison results.
+</p>
+
+---
+
+## Key Takeaways
+
+- Verified LVS using **primitive devices** instead of empty subcircuits.
+- Configured **custom pin permutation** rules in `sky130A_setup.tcl`.
+- Confirmed that **resistor terminals** can be treated as interchangeable during LVS.
+- Verified successful LVS after **diode port swapping**.
+- Observed that `comp.out` preserves the updated pin mapping while confirming circuit equivalence.
+
+# Exercise_05 – Layout vs Schematic LVS Verification Using Magic, Xschem and Netgen
+
+## Objective
+
+The objective of this exercise is to perform Layout Versus Schematic (LVS) verification on an analog wrapper using **Magic**, **Xschem**, and **Netgen**. The exercise demonstrates how to:
+
+- Generate schematic and layout netlists.
+- Compare both netlists using Netgen.
+- Understand hierarchy flattening during LVS.
+- Analyze pin mismatch errors.
+- Identify layout connectivity issues.
+- Correct both layout and schematic.
+- Achieve a clean LVS with zero errors.
+
+---
+
+# Step 1: Environment Setup
+
+Before extracting the netlists, copy the required configuration files into the working directory.
+
+```bash
+cp /usr/share/pdk/sky130A/libs.tech/xschem/xschemrc .
+cp /usr/share/pdk/sky130A/libs.tech/ngspice/spinit .spiceinit
+cp /usr/share/pdk/sky130A/libs.tech/magic/sky130A.magicrc .magicrc
+```
+
+### Notes
+
+- Copy the **xschemrc** file.
+- Copy the **.spiceinit** file.
+- Copy the **.magicrc** file.
+- These configuration files ensure that Magic and Xschem correctly load the SKY130 PDK libraries.
+
+### Screenshots
+
+| Description | Screenshot |
+|------------|------------|
+| Copying the required configuration files | ![](images/module_04/5_lab_setup.png) |
+| Launching the project environment | ![](images/module_04/5_lab_setupb.png) |
+
+---
+
+# Step 2: Generate the Schematic Netlist
+
+Open the analog wrapper schematic inside **Xschem** and generate the SPICE netlist.
+
+### Important Settings
+
+Before exporting the netlist ensure that:
+
+- The extraction directory is correctly configured.
+- **Simulation Top Level is Subckt** is enabled.
+- Export the complete **testbench netlist** instead of only the subcircuit.
+
+These settings ensure that Netgen receives the complete schematic hierarchy required for LVS.
+
+### Screenshots
+
+| Description | Screenshot |
+|------------|------------|
+| Analog Wrapper Schematic | ![](images/module_04/5_schematic_of_analog_wrapper.png) |
+| Wrapper Pin Connections | ![](images/module_04/5_wrapper_pin_information.png) |
+
+---
+
+# Step 3: Extract the Layout Netlist
+
+Open the layout in **Magic**.
+
+```bash
+magic -d XR
+```
+
+Generate the extracted SPICE netlist using:
+
+```tcl
+ext2spice lvs
+```
+
+Magic extracts the physical layout and produces the SPICE netlist for LVS comparison.
+
+### Screenshot
+
+| Description | Screenshot |
+|------------|------------|
+| Layout Netlist Extraction | ![](images/module_04/5_layout_extraction.png) |
+
+---
+
+# Step 4: Perform Initial LVS Comparison
+
+Run Netgen to compare the schematic and layout netlists.
+
+The first LVS comparison reports several mismatches.
+
+### Initial Observations
+
+- Device counts match.
+- Net counts match.
+- Several unmatched nets are reported.
+- Pin mismatches are identified.
+
+This indicates that the schematic and layout are structurally similar but still contain connectivity issues.
+
+### Screenshots
+
+| Description | Screenshot |
+|------------|------------|
+| Initial LVS Report | ![](images/module_04/5_initial_lvs.png) |
+| Running LVS on the Analog Wrapper | ![](images/module_04/5_run_lvs_of_analog_wrapper.png) |
+
+---
+
+# Step 5: Understanding the LVS Mismatch
+
+The comparison shows that several standard-cell definitions are absent in the extracted schematic hierarchy.
+
+Since Netgen cannot find their complete definitions, it automatically treats them as **black-box cells**.
+
+Instead of performing full device matching, Netgen reports pin-level mismatches for these cells.
+
+This behavior simplifies debugging while preserving the circuit hierarchy.
+
+### Screenshots
+
+| Description | Screenshot |
+|------------|------------|
+| Wrapper Mismatch Summary | ![](images/module_04/5_missmatch_output.png) |
+| Pin Mapping Mismatch | ![](images/module_04/5_missmatch_in_analog_wrapper.png) |
+
+---
+
+# Step 6: Comparing the example_por Cell
+
+Instead of debugging the complete wrapper immediately, the **example_por** block is verified separately.
+
+During comparison, Netgen recognizes that the layout and schematic use different hierarchy levels.
+
+### Layout Hierarchy
+
+```
+Top-Level Circuit
+        │
+Parameterized Devices
+        │
+Primitive Devices
+```
+
+### Schematic Hierarchy
+
+```
+Top-Level Circuit
+        │
+Primitive Devices
+```
+
+Although the hierarchy differs, Netgen automatically **flattens** both netlists before comparison.
+
+As a result, the extracted devices match successfully.
+
+### Screenshots
+
+| Description | Screenshot |
+|------------|------------|
+| LVS Result for example_por | ![](images/module_04/5_lvs_of_example_por.png) |
+| Automatic Device Flattening | ![](images/module_04/5_merging_of_devices_layout_devices_equal_to_schematic.png) |
+
+---
+
+# Step 7: Investigating the Wrapper Pin Mismatch
+
+After verifying **example_por**, LVS is repeated for the complete wrapper.
+
+The comparison identifies an incorrect connection involving:
+
+- **io_analog[4]**
+- **io_clamp_high[0]**
+
+The **comp.out** report clearly highlights the mismatched pins, helping locate the physical connectivity issue inside the layout.
+
+### Screenshot
+
+| Description | Screenshot |
+|------------|------------|
+| Wrapper Pin Information | ![](images/module_04/5_wrapper_pin_information.png) |
+
+---
+
+# Step 8: Correcting the Layout
+
+The extracted **.mag** layout is inspected to locate the shorted nets.
+
+The investigation confirms that:
+
+- **io_analog[4]**
+- **io_clamp_high[0]**
+
+are unintentionally shorted.
+
+To resolve the issue, a **Metal3 resistor (resmet3)** is inserted between the two nets.
+
+The layout netlist is then extracted again.
+
+### Screenshot
+
+| Description | Screenshot |
+|------------|------------|
+| Layout Correction using Metal3 Resistor | ![](images/module_04/5_extracting_lvs_after_painting_of_rmetal3.png) |
+
+---
+
+# Step 9: Updating the Schematic
+
+To keep the schematic synchronized with the corrected layout, the same resistor is added in **Xschem**.
+
+The resistor dimensions are configured to match the physical implementation.
+
+Finally, the complete testbench netlist is exported again.
+
+### Screenshot
+
+| Description | Screenshot |
+|------------|------------|
+| Updated Analog Wrapper Schematic | ![](images/module_04/5_schematic_correctio_of_analog_wrapper.png) |
+
+---
+
+# Step 10: Final LVS Verification
+
+After updating both the layout and schematic, Netgen is executed once again.
+
+The previous mismatch is completely resolved.
+
+The final LVS confirms:
+
+- Matching device count
+- Matching net count
+- Matching pin connectivity
+- No unmatched nets
+- No unmatched devices
+- Successful LVS verification
+
+### Screenshot
+
+| Description | Screenshot |
+|------------|------------|
+| Final LVS Result | ![](images/module_04/5_netlist_match_wrapper_lvs.png) |
+
+---
+
+# Key Observations
+
+- Proper extraction settings are essential before generating schematic netlists.
+- Missing standard-cell definitions are interpreted as black-box cells.
+- Netgen automatically flattens hierarchical circuits before comparison.
+- Parameterized devices are decomposed into primitive devices during LVS.
+- The **comp.out** report is useful for locating pin mismatches and connectivity errors.
+- Layout shorts can be corrected by modifying both the physical layout and the schematic.
+- Maintaining consistency between layout and schematic is essential for achieving a successful LVS.
+
+---
+
+# Conclusion
+
+This exercise demonstrates a complete LVS debugging workflow for an analog wrapper using the SKY130 PDK. Beginning with schematic and layout extraction, Netgen was used to compare the generated netlists, identify hierarchy-related issues, detect pin mismatches, and locate unintended layout shorts. After correcting the layout by inserting a Metal3 resistor and updating the schematic accordingly, the final LVS completed successfully with zero errors. The exercise also highlights Netgen's automatic hierarchy flattening and the importance of maintaining consistency between physical layout and schematic throughout the verification process.
