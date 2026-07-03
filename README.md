@@ -1261,6 +1261,139 @@ drc find
 - **PCell Configuration:** Verified that device parameters can be modified while maintaining valid layout geometries.
 - **Design Rule Compliance:** Confirmed that the generated parameterized devices satisfy the required DRC constraints before fabrication.
 
+---
+
+## Practical 07 – Angle Rules
+
+### Objective
+
+Understand the **angle-related design rules** in the SKY130 PDK. This practical demonstrates how Magic detects non-manufacturable geometries caused by improper angles and verifies layouts against the permitted angular constraints to ensure reliable fabrication.
+
+#### Commands Used
+
+```tcl
+drc check
+drc why
+drc find
+```
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/angle_rule_07a.png" width="100%">
+
+**Figure 59.** Angle rule violation identified during DRC verification.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/angle_rule_07b.png" width="100%">
+
+**Figure 60.** Analysis of the angle rule violation using Magic.
+
+</td>
+
+</tr>
+</table>
+
+<br>
+
+<p align="center">
+    <img src="images/module_03/angle_rule_07c.png" width="70%">
+</p>
+
+<p align="center">
+    <em><b>Figure 61.</b> Corrected layout satisfying the SKY130 angle rule.</em>
+</p>
+
+### Observation
+
+- **Angle Rule Detection:** Identified layout geometries containing unsupported or non-manufacturable angles using Magic DRC.
+- **Violation Analysis:** Examined the reported DRC messages to understand the cause of the violation.
+- **Rule Compliance:** Modified the layout to satisfy the SKY130 angle rule, resulting in a DRC-clean design.
+
+---
+
+## Practical 08 – Seal Ring Verification
+
+### Objective
+
+Understand the purpose of the **seal ring** in the SKY130 PDK and verify the associated design rules using Magic. Seal rings are placed around the chip boundary to protect the die from mechanical damage, contamination, moisture, and process-induced stress during fabrication and packaging.
+
+#### Commands Used
+
+```tcl
+drc check
+drc why
+drc find
+```
+
+<table align="center">
+<tr>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/seal_ring_08a.png" width="100%">
+
+**Figure 62.** Initial seal ring layout and DRC verification.
+
+</td>
+
+<td align="center" width="50%">
+
+<img src="images/module_03/seal_ring_08b.png" width="100%">
+
+**Figure 63.** Analysis of seal ring rule violations.
+
+</td>
+
+</tr>
+</table>
+
+<br>
+
+<p align="center">
+    <img src="images/module_03/seal_ring_08c.png" width="70%">
+</p>
+
+<p align="center">
+    <em><b>Figure 64.</b> Final seal ring layout satisfying the required SKY130 design rules.</em>
+</p>
+
+### Observation
+- **Rule Analysis:** Identified and analyzed DRC violations associated with the seal ring geometry and spacing.
+- **Final Verification:** Confirmed that the corrected seal ring layout satisfies the required SKY130 design rules, ensuring improved robustness for fabrication and packaging.
+
+---
+
+## Practical 09 – Latch-Up Rules
+
+### Objective
+
+Understand the **latch-up prevention rules** in the SKY130 PDK and verify the required spacing and well isolation constraints using Magic DRC. These rules help prevent parasitic PNPN structures that can create unintended current paths and lead to device failure.
+
+#### Commands Used
+
+```tcl
+drc check
+drc why
+drc find
+```
+
+<p align="center">
+    <img src="images/module_03/latchup_rules_09a.png" width="80%">
+</p>
+
+<p align="center">
+    <em><b>Figure 65.</b> Latch-up rule verification using Magic DRC.</em>
+</p>
+### Observation
+- **Well Isolation:** Confirmed that the required spacing and isolation between wells and diffusion regions satisfy the specified design constraints.
+- **Design Reliability:** Ensuring compliance with latch-up rules improves circuit robustness by preventing parasitic conduction paths during device operation.
+
 ## Common Issues & Solutions
 
 The following are some common issues encountered during the workshop along with the solutions that worked during implementation.
