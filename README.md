@@ -2214,3 +2214,249 @@ The final LVS confirms:
 - Maintaining consistency between layout and schematic is essential for achieving a successful LVS.
 
 ---
+# Exercise 06: Resolving LVS Mismatch Due to Fill Cells in Digital PLL
+
+## Objective
+
+This exercise demonstrates how fill cells inserted during the digital place-and-route flow can introduce apparent mismatches during Layout Versus Schematic (LVS) verification. Since Magic ignores these fill cells during extraction by default, Netgen reports discrepancies between the layout and schematic netlists. The objective is to understand the cause of these mismatches, configure the extraction environment correctly, and achieve a clean LVS result.
+
+---
+
+## Workflow Overview
+
+```
+Digital PLL Layout
+        │
+        ▼
+Layout Extraction using Magic
+        │
+        ▼
+Generate SPICE Netlist
+        │
+        ▼
+Run Netgen LVS
+        │
+        ▼
+Observe Fill Cell Mismatch
+        │
+        ▼
+Enable GDS-Based Extraction
+        │
+        ▼
+Re-run LVS
+        │
+        ▼
+Successful LVS Match
+```
+
+---
+
+# Step 1: Inspecting the Digital PLL Layout
+
+The Digital PLL layout generated during the physical design flow contains several standard cells, including filler cells that are automatically inserted by the router. These filler cells improve well continuity and maintain design rule compliance but do not contribute to the circuit functionality.
+
+### Layout of the Digital PLL
+
+<p align="center">
+<img src="images/module_04/6_digital_pll_layout.png" width="850">
+</p>
+
+---
+
+# Step 2: Performing Layout Extraction
+
+The layout is extracted using Magic with the following command:
+
+```tcl
+ext2spice lvs
+```
+
+Magic generates the SPICE netlist required for LVS comparison.
+
+### Layout Extraction
+
+<p align="center">
+<img src="images/module_04/6_lvs_extraction.png" width="850">
+</p>
+
+---
+
+# Step 3: Understanding the Cause of the LVS Error
+
+Initially, LVS reports mismatches even though the functional circuitry is correct.
+
+The mismatch occurs because:
+
+- Magic ignores filler cells during extraction.
+- The Verilog netlist still contains these filler cells.
+- Netgen therefore compares different numbers of devices.
+
+The comparison output clearly shows the additional filler cells present in the schematic netlist.
+
+### Initial LVS Mismatch
+
+<p align="center">
+<img src="images/module_04/6_pin_mismatch_of_digital_pll.png" width="850">
+</p>
+
+---
+
+# Step 4: Examining the Fill Cells
+
+The highlighted cells are standard filler cells automatically inserted by the digital implementation tools.
+
+These cells:
+
+- Maintain well continuity.
+- Improve manufacturing robustness.
+- Do not affect circuit functionality.
+- Are intentionally ignored by Magic during normal extraction.
+
+### Example Fill Cell
+
+<p align="center">
+<img src="images/module_04/6_filler_0_11_layout.png" width="350">
+</p>
+
+---
+
+# Step 5: Identifying the Root Cause
+
+Magic reports warnings indicating that filler cell terminals are not fully extracted because they contain no functional circuitry.
+
+This confirms that the mismatch originates from the extraction process rather than from the circuit itself.
+
+### Extraction Warnings
+
+<p align="center">
+<img src="images/module_04/6_cause_for_error.png" width="850">
+</p>
+
+---
+
+# Step 6: Reviewing the Generated Netlist
+
+The generated Verilog netlist includes all standard cells, including filler and decap cells.
+
+Since these cells are present in the schematic but absent in the extracted layout netlist, Netgen reports mismatches.
+
+### Digital PLL Netlist
+
+<p align="center">
+<img src="images/module_04/6_digital_pll_netlist.png" width="850">
+</p>
+
+---
+
+# Step 7: Updating the LVS Environment
+
+To instruct Magic to use the GDS database during extraction, the environment variable below is added to the `run_lvs` script:
+
+```bash
+export MAGIC_EXT_USE_GDS=1
+```
+
+This forces Magic to retain the required digital fill cell information during extraction.
+
+### Environment Configuration
+
+<p align="center">
+<img src="images/module_04/6_environement_setup_befor_netgen_lvs.png" width="850">
+</p>
+
+---
+
+# Step 8: Modifying the LVS Run Script
+
+The `run_lvs` script is updated by inserting the environment variable before executing Netgen.
+
+```bash
+export MAGIC_EXT_USE_GDS=1
+
+netgen -batch lvs \
+"../mag/digital_pll.spice digital_pll" \
+"../verilog/digital_pll.v digital_pll" \
+/usr/share/pdk/sky130A/libs.tech/netgen/sky130A_setup.tcl \
+exercise_6_comp.out -json | tee lvs.log
+```
+
+### Updated run_lvs Script
+
+<p align="center">
+<img src="images/module_04/6_editing_the_run_lvs_shell.png" width="850">
+</p>
+
+---
+
+# Step 9: Re-running LVS
+
+After enabling GDS-based extraction, Magic now includes the filler cell information required by Netgen.
+
+The extraction completes successfully without introducing any artificial mismatches.
+
+### Updated Extraction
+
+<p align="center">
+<img src="images/module_04/6_lvs_extraction.png" width="850">
+</p>
+
+---
+
+# Step 10: Final LVS Verification
+
+The LVS comparison now reports:
+
+- Equal device count
+- Equal net count
+- No unmatched devices
+- No unmatched nets
+- No pin mismatches
+- Total Errors = **0**
+
+This confirms that the extracted layout and schematic are electrically equivalent.
+
+### Successful LVS Result
+
+<p align="center">
+<img src="images/module_04/6_final_lvs_match.png" width="850">
+</p>
+
+---
+
+# Key Learning Outcomes
+
+- Understood why filler cells create apparent LVS mismatches.
+- Learned that Magic ignores non-functional fill cells during standard extraction.
+- Identified the effect of missing filler cells on Netgen comparison.
+- Configured Magic to perform GDS-aware extraction.
+- Successfully modified the LVS execution script.
+- Achieved a clean LVS result with zero mismatches.
+
+---
+
+# Commands Used
+
+```bash
+ext2spice lvs
+
+export MAGIC_EXT_USE_GDS=1
+
+netgen -batch lvs \
+"../mag/digital_pll.spice digital_pll" \
+"../verilog/digital_pll.v digital_pll" \
+/usr/share/pdk/sky130A/libs.tech/netgen/sky130A_setup.tcl \
+exercise_6_comp.out -json | tee lvs.log
+```
+
+---
+
+# Observations
+
+- Fill cells are inserted automatically during digital implementation.
+- They are important for fabrication but do not contribute to circuit functionality.
+- Magic skips these cells during normal extraction.
+- Enabling `MAGIC_EXT_USE_GDS=1` allows Netgen to compare equivalent structures.
+- The final LVS verification completes successfully with zero errors.
+
+---
+
