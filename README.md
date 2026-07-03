@@ -2880,3 +2880,137 @@ After correcting the device properties, rerun LVS to verify the changes. The num
     <a href="#repository-navigation">Back to Navigation ↑</a>
 </p>
 
+# OpenLANE RTL-to-GDSII Flow Overview
+
+OpenLANE is an open-source automated ASIC implementation flow that transforms an **RTL design into a manufacturable GDSII layout**. It integrates multiple open-source EDA tools to perform synthesis, floorplanning, placement, clock tree synthesis, routing, physical verification, and tapeout.
+
+<p align="center">
+    <img src="open_lane_flow.png" alt="DRC and LVS Fundamentals Flow" width="100%">
+</p>
+
+<p align="center">
+    <em>Figure showing the Overview of the OpenLANE RTL-to-GDSII Flow.</em>
+</p>
+
+---
+
+## OpenLANE Flow Overview
+
+| Stage | Tool(s) | Purpose |
+|:------:|:---------|:--------|
+| **RTL Synthesis** | Yosys, ABC | Converts RTL into a technology-mapped gate-level netlist. |
+| **Static Timing Analysis** | OpenSTA | Analyzes timing and reports setup/hold violations. |
+| **Floorplanning** | init_fp, IOPlacer, PDNGen, Tapcell | Creates the core area, places I/O pins, generates power grid, and inserts tap/decap cells. |
+| **Placement** | RePlAce, Resizer, OpenDP | Places standard cells and optimizes layout before legalization. |
+| **Clock Tree Synthesis** | TritonCTS | Builds and balances the clock distribution network. |
+| **Routing** | FastRoute, TritonRoute, OpenRCX | Performs global & detailed routing and extracts parasitics (SPEF). |
+| **Tapeout** | Magic, KLayout | Generates the final GDSII layout for fabrication. |
+| **Signoff** | Magic, KLayout, Netgen, CVC | Performs DRC, LVS, Antenna, and Circuit Validity Checks. |
+
+---
+
+## Major Tools Used
+
+| Tool | Function |
+|------|----------|
+| **Yosys** | RTL synthesis |
+| **ABC** | Technology mapping |
+| **OpenSTA** | Static Timing Analysis |
+| **RePlAce** | Global placement |
+| **OpenDP** | Detailed placement |
+| **TritonCTS** | Clock Tree Synthesis |
+| **FastRoute** | Global routing |
+| **TritonRoute** | Detailed routing |
+| **OpenRCX** | Parasitic extraction |
+| **Magic** | Layout generation & DRC |
+| **KLayout** | GDS generation & DRC |
+| **Netgen** | LVS verification |
+| **CVC** | Circuit validity checks |
+
+---
+
+# OpenLANE Configuration
+
+The **config.tcl** file controls the OpenLANE execution flow by defining design-specific parameters such as:
+
+- Design name
+- Clock period
+- PDK information
+- Floorplan utilization
+- Routing options
+- Power and ground configuration
+
+---
+
+# Running OpenLANE
+
+## Non-Interactive Flow
+
+Runs the complete RTL-to-GDSII flow automatically.
+
+```bash
+export PDK_ROOT=/usr/local/share/pdk
+make mount
+./flow.tcl -design spm -tag run1
+```
+
+---
+
+## Interactive Flow
+
+Launch OpenLANE in interactive mode.
+
+```bash
+export PDK_ROOT=/usr/local/share/pdk
+make mount
+./flow.tcl -interactive
+```
+
+Initialize the design:
+
+```tcl
+package require openlane
+prep -design spm -tag run1
+```
+
+---
+
+## Common Interactive Commands
+
+| Command | Description |
+|----------|-------------|
+| `run_synthesis` | Run RTL synthesis |
+| `run_floorplan` | Generate floorplan |
+| `run_placement` | Place standard cells |
+| `run_cts` | Clock Tree Synthesis |
+| `run_resizer_timing` | Timing optimization |
+| `run_routing` | Global & detailed routing |
+| `write_powered_verilog` | Export powered Verilog netlist |
+| `run_magic` | Generate GDSII using Magic |
+| `run_klayout` | Generate GDSII using KLayout |
+| `run_klayout_gds_xor` | Compare GDS files (XOR) |
+| `run_magic_spice_export` | Export SPICE netlist |
+| `run_lvs` | Perform LVS verification |
+| `run_magic_drc` | Run DRC checks |
+| `run_antenna_check` | Perform antenna analysis |
+| `run_lef_cvc` | Circuit validity checks |
+| `generate_final_summary_report` | Generate complete implementation report |
+
+---
+
+# Best Practices to Reduce DRC Violations
+
+- Avoid long routing on **Local Interconnect (LI)** layers.
+- Reduce **`FP_CORE_UTIL`** to provide additional routing space.
+- Avoid standard cells that are known to introduce DRC issues.
+- Perform manual DRC cleanup for small numbers of violations before final signoff.
+
+---
+
+# Official Documentation
+
+- **OpenLANE Documentation:** https://openlane.readthedocs.io/en/latest/index.html
+- **Configuration Reference:** https://openlane.readthedocs.io/en/latest/reference/configuration.html
+---
+
+
