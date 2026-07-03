@@ -2214,7 +2214,3 @@ The final LVS confirms:
 - Maintaining consistency between layout and schematic is essential for achieving a successful LVS.
 
 ---
-
-# Conclusion
-
-This exercise demonstrates a complete LVS debugging workflow for an analog wrapper using the SKY130 PDK. Beginning with schematic and layout extraction, Netgen was used to compare the generated netlists, identify hierarchy-related issues, detect pin mismatches, and locate unintended layout shorts. After correcting the layout by inserting a Metal3 resistor and updating the schematic accordingly, the final LVS completed successfully with zero errors. The exercise also highlights Netgen's automatic hierarchy flattening and the importance of maintaining consistency between physical layout and schematic throughout the verification process.
