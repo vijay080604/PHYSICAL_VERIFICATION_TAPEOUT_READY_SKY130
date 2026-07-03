@@ -1550,3 +1550,6 @@ The layout window returns to normal operation without restarting Magic.
 
 > This issue may occur occasionally while working in the VNC environment and can usually be resolved by refreshing the view through zooming.
 > ---
+> <p align="right">
+    <a href="#repository-navigation">Back to Navigation ↑</a>
+</p>
